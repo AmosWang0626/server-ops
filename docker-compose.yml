@@ -1,0 +1,57 @@
+version: "3.5"
+services:
+  nginx-svc:
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./nginx/conf.d:/etc/nginx/conf.d"
+      - "./nginx/html:/usr/share/nginx/html"
+
+  mysql-svc:
+    image: mysql
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/backup:/backup"
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_ROOT_PASSWORD: "AmosWang@2022"
+      MYSQL_DATABASE: serverdb
+      MYSQL_USER: amoswang
+      MYSQL_PASSWORD: "AmosWang@2022"
+      TZ: Asia/Shanghai
+
+  minio-svc:
+    image: quay.io/minio/minio:RELEASE.2021-11-03T03-36-36Z
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - "./minio/data:/data"
+    environment:
+      MINIO_ROOT_USER: "amoswang"
+      MINIO_ROOT_PASSWORD: "AmosWang@2022"
+    command: server /data --console-address ":9001"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50M"
+        max-file: "10"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+networks:
+  default:
+    name: server-ops-net
