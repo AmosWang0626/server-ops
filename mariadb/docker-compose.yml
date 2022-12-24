@@ -1,0 +1,22 @@
+version: '3.5'
+services:
+    mariadb-svc:
+        image: mariadb
+        container_name: mariadb
+        restart: always
+        ports:
+            - "3306:3306"
+        volumes:
+            - "./mysql/data:/var/lib/mysql"
+            - "./mysql/backup:/backup"
+        environment:
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_ROOT_PASSWORD: "root"
+            MYSQL_DATABASE: think
+            MYSQL_USER: amoswang
+            MYSQL_PASSWORD: "root"
+            TZ: Asia/Shanghai
+
+networks:
+    default:
+        name: server-net

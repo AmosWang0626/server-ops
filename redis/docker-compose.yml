@@ -1,0 +1,19 @@
+version: '3.5'
+services:
+    redis-svc:
+        image: redis
+        container_name: redis
+        restart: always
+        ports:
+            - "6379:6379"
+        volumes:
+            - "./redis.conf:/etc/redis/redis.conf:ro"
+            - "./data:/data"
+        command: redis-server /etc/redis/redis.conf
+        privileged: true #container内的root拥有真正的root权限
+        environment:
+            TZ: Asia/Shanghai
+
+networks:
+    default:
+        name: server-net
